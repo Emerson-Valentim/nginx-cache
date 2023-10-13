@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  # App instance
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/curl.node.Dockerfile
+    volumes:
+      - ./dist:/usr/app
+    environment:
+      - PORT=1000
+    command: node /usr/app/main.js
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1000/health"]
+      interval: 1s
+      timeout: 30s
+      retries: 30
+      start_period: 1s
+
+  # Cache instances
+  cache-1:
+    image: nginx:1.24.0-alpine-slim
+    hostname: cache-1
+    volumes:
+      - ./docker/cache:/var/cache/nginx/service-cache
+      - ./docker/cache.conf:/etc/nginx/nginx.conf
+    networks:
+      - private
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "8080" ]
+      interval: 1s
+      timeout: 30s
+      retries: 30
+      start_period: 1s
+    depends_on:
+      - app
+  cache-2:
+    image: nginx:1.24.0-alpine-slim
+    hostname: cache-2
+    volumes:
+      - ./docker/cache:/var/cache/nginx/service-cache
+      - ./docker/cache.conf:/etc/nginx/nginx.conf
+    networks:
+      - private
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "8080" ]
+      interval: 1s
+      timeout: 30s
+      retries: 30
+      start_period: 1s
+    depends_on:
+      - app
+
+  # Load balancer instance
+  lb:
+    image: nginx:1.24.0-alpine-slim
+    volumes:
+      - ./docker/balancer.conf:/etc/nginx/nginx.conf
+    networks:
+      - private
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "8080" ]
+      interval: 1s
+      timeout: 30s
+      retries: 30
+      start_period: 1s
+    depends_on:
+      - cache-1
+      - cache-2
+
+networks:
+  private:
+    driver: bridge
