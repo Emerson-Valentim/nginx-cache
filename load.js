@@ -2,6 +2,9 @@ const { setTimeout } = require("timers/promises")
 const { Agent } = require("http")
 const axios = require("axios")
 
+const BATCH_SIZE = 200;
+const WAIT_TIME_IN_SECONDS = 0.5
+
 function waitSeconds(seconds) {
   return setTimeout(seconds * 1000)
 }
@@ -28,8 +31,8 @@ async function load() {
 
     results.push(result.data)
 
-    if (shouldWaitBasedInBatchSize(i, 200)) {
-      await waitSeconds(0.5)
+    if (shouldWaitBasedInBatchSize(i, BATCH_SIZE)) {
+      await waitSeconds(WAIT_TIME_IN_SECONDS)
     }
   }
 
