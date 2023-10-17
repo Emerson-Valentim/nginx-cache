@@ -2,10 +2,10 @@ const app = require("express")()
 const port = process.env.PORT
 
 app.get('/', (req, res) => {
-  console.log(`Incoming request from ${req.headers["x-server-origin"]} instance`)
+  console.log(`Incoming request from ${req.headers["x-server-origin"]} instance ${new Date().toISOString()}`)
 
   if (req.headers["x-invalidate"] === "yes") {
-    res.setHeader("Cache-Control", "max-age=1")
+    res.setHeader("Cache-Control", "max-age=0")
   }
 
   if (req.headers["x-error"] === "yes") {
