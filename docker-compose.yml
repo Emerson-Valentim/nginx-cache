@@ -27,6 +27,8 @@ services:
     volumes:
       - ./docker/cache:/var/cache/nginx/service-cache
       - ./docker/cache.conf:/etc/nginx/nginx.conf
+    environment:
+      - APP=app
     networks:
       - private
     healthcheck:
@@ -43,6 +45,8 @@ services:
     volumes:
       - ./docker/cache:/var/cache/nginx/service-cache
       - ./docker/cache.conf:/etc/nginx/nginx.conf
+    environment:
+      - APP=app
     networks:
       - private
     healthcheck:
