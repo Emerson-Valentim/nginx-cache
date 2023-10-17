@@ -22,11 +22,12 @@ services:
 
   # Cache instances
   cache-1:
-    image: nginx:1.24.0-alpine-slim
+    build:
+      context: .
+      dockerfile: ./docker/cache.nginx.Dockerfile
     hostname: cache-1
     volumes:
       - ./docker/cache:/var/cache/nginx/service-cache
-      - ./docker/cache.conf:/etc/nginx/nginx.conf
     environment:
       - APP=app
     networks:
@@ -40,11 +41,12 @@ services:
     depends_on:
       - app
   cache-2:
-    image: nginx:1.24.0-alpine-slim
+    build:
+      context: .
+      dockerfile: ./docker/cache.nginx.Dockerfile
     hostname: cache-2
     volumes:
       - ./docker/cache:/var/cache/nginx/service-cache
-      - ./docker/cache.conf:/etc/nginx/nginx.conf
     environment:
       - APP=app
     networks:
